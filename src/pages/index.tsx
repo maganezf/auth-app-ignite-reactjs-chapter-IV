@@ -1,12 +1,14 @@
 import { useAuthContext } from 'contexts/AuthCountext';
+import { GetServerSideProps } from 'next';
 import { FormEvent, useState } from 'react';
+import { withSSRGuest } from 'utils/withSSRGuest';
 import styles from './home.module.scss';
 
 export default function Home() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const { isAuthenticated, signIn } = useAuthContext();
+  const { signIn } = useAuthContext();
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -43,3 +45,11 @@ export default function Home() {
     </form>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = withSSRGuest(
+  async context => {
+    return {
+      props: {},
+    };
+  }
+);
