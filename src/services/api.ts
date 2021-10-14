@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { signOut } from 'contexts/AuthCountext';
 import { parseCookies, setCookie } from 'nookies';
 
 let cookies = parseCookies();
@@ -79,8 +80,11 @@ axios.interceptors.response.use(
           });
         });
       } else {
-        // logout
+        // unauthorized condition what is not 'token.expired' error - any unauthorized condition
+        signOut();
       }
     }
+
+    return Promise.reject(error);
   }
 );

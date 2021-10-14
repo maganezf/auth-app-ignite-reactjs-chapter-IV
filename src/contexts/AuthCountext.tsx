@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import { parseCookies, setCookie } from 'nookies';
+import { destroyCookie, parseCookies, setCookie } from 'nookies';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from 'services/api';
 
@@ -35,6 +35,13 @@ interface AuthProviderProps {
 
 const AuthContext = createContext({} as AuthContextData);
 
+export function signOut() {
+  destroyCookie(undefined, 'auth-app.token');
+  destroyCookie(undefined, 'auth-app.refreshToken');
+
+  Router.push('/');
+}
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<null | User>(null);
 
@@ -44,11 +51,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const { 'auth-app.token': token } = parseCookies();
 
     if (token) {
-      api.get('/me').then(response => {
-        const { email, permissions, roles } = response.data;
+      api
+        .get('/me')
+        .then(response => {
+          const { email, permissions, roles } = response.data;
 
-        setUser({ email, permissions, roles });
-      });
+          setUser({ email, permissions, roles });
+        })
+        .catch(() => {
+          // any error what is not refreshToken error
+          signOut();
+        });
     }
   }, []);
 
