@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import { setCookie, parseCookies } from 'nookies';
+import { parseCookies, setCookie } from 'nookies';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from 'services/api';
 
@@ -10,6 +10,8 @@ type User = {
 };
 
 type UserResponseData = {
+  email: string;
+  password: string;
   token: string;
   refreshToken: string;
   permissions: string[];
@@ -52,15 +54,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   async function signIn({ email, password }: SignInCredentials) {
     try {
-      const { data } = await api.post('/sessions', {
+      const response = await api.post<Partial<UserResponseData>>('sessions', {
         email,
         password,
       });
 
-      console.log('response.data', data);
+      console.log('response.data', response.data);
 
-      const { token, refreshToken, permissions, roles } =
-        data as unknown as UserResponseData;
+      const { roles, permissions, token, refreshToken } = response.data;
 
       setCookie(undefined, 'auth-app.token', token, {
         maxAge: 60 * 60 * 24 * 30, // 30 days
