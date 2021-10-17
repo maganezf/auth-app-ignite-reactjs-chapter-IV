@@ -6,7 +6,7 @@ import { api } from 'services/apiClient';
 import { withSSRAuthentication } from 'utils/withSSRAuthentication';
 
 export default function Dashboard() {
-  const { user } = useAuthContext();
+  const { user, signOut } = useAuthContext();
 
   useEffect(() => {
     api.get('/me').then(response => console.log('/me Dashboard', response));
@@ -15,6 +15,10 @@ export default function Dashboard() {
   return (
     <>
       <h1>Dashboard - Hello {user?.email}</h1>
+
+      <button type='button' onClick={signOut}>
+        SignOut
+      </button>
 
       <CanSee
         permissions={['users.list', 'users.create', 'metrics.list']}
