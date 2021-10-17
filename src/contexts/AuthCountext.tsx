@@ -1,7 +1,7 @@
 import Router from 'next/router';
 import { destroyCookie, parseCookies, setCookie } from 'nookies';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { api } from 'services/api';
+import { api } from 'services/apiClient';
 
 type User = {
   email: string;
@@ -71,8 +71,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         email,
         password,
       });
-
-      console.log('response.data', response.data);
 
       const { roles, permissions, token, refreshToken } = response.data;
 
