@@ -1,5 +1,5 @@
+import { CanSee } from 'components/CanSee';
 import { useAuthContext } from 'contexts/AuthCountext';
-import { useCan } from 'hooks/useCan';
 import { useEffect } from 'react';
 import { setupApiClient } from 'services/api';
 import { api } from 'services/apiClient';
@@ -7,11 +7,6 @@ import { withSSRAuthentication } from 'utils/withSSRAuthentication';
 
 export default function Dashboard() {
   const { user } = useAuthContext();
-
-  const userCanSeeMetrics = useCan({
-    permissions: ['users.list', 'users.create', 'metrics.list'],
-    roles: ['administrator'],
-  });
 
   useEffect(() => {
     api.get('/me').then(response => console.log('/me Dashboard', response));
@@ -21,13 +16,14 @@ export default function Dashboard() {
     <>
       <h1>Dashboard - Hello {user?.email}</h1>
 
-      {userCanSeeMetrics && (
-        <div>
-          <h1>Métricas:</h1>
+      <CanSee
+        permissions={['users.list', 'users.create', 'metrics.list']}
+        roles={['administrator']}
+      >
+        <h1>Métricas:</h1>
 
-          <span>pode ver as métricas</span>
-        </div>
-      )}
+        <span>pode ver as métricas</span>
+      </CanSee>
     </>
   );
 }
